@@ -16,7 +16,7 @@ const user = {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
           return res
-            .status(403)
+            .status(203)
             .send({
               success: false,
               message: "User Exists Already with this email.",
@@ -35,7 +35,7 @@ const user = {
           return res.status(201).send({
             success: true,
             message: "User Created Succesfully",
-            user: generateUser,
+            // user: generateUser,
           });
         } else {
           return res
