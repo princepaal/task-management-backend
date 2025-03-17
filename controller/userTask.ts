@@ -15,11 +15,10 @@ const task = {
         .status(400)
         .send({ success: false, message: "Title and description required" });
     }
-
     const newTask = await Task.create({
       title,
       description,
-      userId: req.user,
+      userId: req.user.id,
     });
 
     return res.status(201).send({
@@ -31,55 +30,60 @@ const task = {
 
   updateTask: async (req: Request, res: Response): Promise<any> => {
     try {
-        console.log("Received Request", req.method, req.url);
-        console.log("Request Body", req.body);
-        console.log("Request Params", req.params);
+      const { title, description, removeTask }: ITask = req.body;
+      const taskId = req.params.id;
+      const userId = (req as any).user.id;
+      console.log("userId", userId);
 
-        const { title, description, removeTask }: ITask = req.body;
-        const taskId = req.params.id;
-        const userId = (req as any).user.id;
-        console.log('userId', userId)
+      if (!taskId) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Task ID is required" });
+      }
 
-        if (!taskId) {
-            return res.status(400).json({ success: false, message: "Task ID is required" });
-        }
+      const findTask = await Task.findOne({ _id: taskId });
+      if (!findTask) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Task not found" });
+      }
 
-        const findTask = await Task.findOne({ _id: taskId });
-        if (!findTask) {
-            return res.status(404).json({ success: false, message: "Task not found" });
-        }
+      const updatedTask = await Task.findByIdAndUpdate(
+        taskId,
+        { $set: { title, description, removeTask } },
+        { new: true }
+      );
 
-        const updatedTask = await Task.findByIdAndUpdate(
-            taskId,
-            { $set: { title, description, removeTask } },
-            { new: true }
-        );
-
-        console.log("Updated Task:", updatedTask);
-
-        return res.status(200).send({
-            success: true,
-            message: "Task Updated Successfully",
-            task: updatedTask,
-        });
+      return res.status(200).send({
+        success: true,
+        message: "Task Updated Successfully",
+        task: updatedTask,
+      });
     } catch (error) {
-        console.error("Error updating task:", error);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
     }
-},
+  },
 
-  getAllTasksList: async(req: Request,res: Response):Promise<any> =>{
-    //get all the tasks
-    const userId = (req as any).user;
-    console.log('userId', userId);
-
-    const findList = await Task.find({userId})
-    console.log('findList', findList)
-
-
-
-
-  }
+  getAllTasksList: async (req: Request, res: Response): Promise<any> => {
+    try {
+      const userId = (req as any).user.id;
+      console.log("userId", userId);
+      const findList = await Task.find({ userId });
+      return res.status(200).json({
+        success: true,
+        message: "List fetched successfully",
+        task: findList,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error instanceof Error ? error.message : error,
+      });
+    }
+  },
 };
 
 export default task;

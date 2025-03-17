@@ -1,28 +1,27 @@
-import {Request, Response} from 'express'
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 interface AuthRequest extends Request {
-    user?: any;
+    user?: { id: string };
 }
-const varifyToken = async(req: AuthRequest,res: Response, next: any): Promise<any>=> {
+
+const varifyToken = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
+    console.log('Middleware triggered', req.header('Authorization'));
 
     const token = req.header('Authorization')?.split(' ')?.[1];
-    if(!token){
-        return res.status(401).send({success: false,message:"Token Required"})
+    if (!token) {
+        return res.status(401).json({ success: false, message: "Token Required" });
     }
 
     try {
-        console.log('req', req)
-        const decodeToken: any = jwt.verify(token, process.env.JWT_SECRET!)
-        console.log('decodeToken', decodeToken?.userId)
-        req.user = decodeToken.userId
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+        console.log('Decoded Token:', decodedToken.userId);
+        req.user = { id: decodedToken.userId };
         next();
     } catch (error) {
-        if(!token){
-            return res.status(401).send({success: false,message:"Invalid Token"})
-        }
-        
+        console.error('JWT verification error:', error);
+        return res.status(401).json({ success: false, message: "Invalid Token" });
     }
+};
 
-}
 export default varifyToken;
