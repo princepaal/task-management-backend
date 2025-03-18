@@ -11,5 +11,6 @@ router.post("/tasks", varifyToken, task.createUserTask);
 router.put("/tasks/:id",varifyToken,task.updateTask);
 
 router.get('/tasks', varifyToken, task.getAllTasksList);
+router.delete('/delete-task/:id',varifyToken,task.deleteTask);
 
 export default router;
