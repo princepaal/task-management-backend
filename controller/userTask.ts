@@ -32,8 +32,6 @@ const task = {
     try {
       const { title, description, removeTask }: ITask = req.body;
       const taskId = req.params.id;
-      const userId = (req as any).user.id;
-      console.log("userId", userId);
 
       if (!taskId) {
         return res
@@ -84,6 +82,23 @@ const task = {
       });
     }
   },
+
+  deleteTask: async(req:Request,res:Response): Promise <any>=>{
+
+    try {
+      const taskId = req.params.id;
+      console.log('taskId', taskId);
+      const task = await Task.findByIdAndDelete({_id: taskId});
+      console.log('findTaskToDelete', task);
+      if(!task){
+        return res.status(404).send({ success: false, message: 'Task not found with this Id'});
+      }
+      res.status(200).send({success: true, message: "Task deleted successfully"});
+      
+    } catch (error) {
+      res.status(500).send({ message: 'Internal Server error', error });
+    }
+  }
 };
 
 export default task;
