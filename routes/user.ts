@@ -6,11 +6,13 @@ const router = express.Router();
 
 router.post("/signup", user.createUser);
 router.post("/login", user.loginUser);
+
 router.post("/tasks", varifyToken, task.createUserTask);
 
+router.get('/tasks/:id',varifyToken,task.getSingleTask);
 router.put("/tasks/:id",varifyToken,task.updateTask);
 
 router.get('/tasks', varifyToken, task.getAllTasksList);
-router.delete('/delete-task/:id',varifyToken,task.deleteTask);
+router.delete('/task/:id',varifyToken,task.deleteTask);
 
 export default router;

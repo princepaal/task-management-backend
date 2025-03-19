@@ -83,22 +83,47 @@ const task = {
     }
   },
 
-  deleteTask: async(req:Request,res:Response): Promise <any>=>{
-
+  deleteTask: async (req: Request, res: Response): Promise<any> => {
     try {
       const taskId = req.params.id;
-      console.log('taskId', taskId);
-      const task = await Task.findByIdAndDelete({_id: taskId});
-      console.log('findTaskToDelete', task);
-      if(!task){
-        return res.status(404).send({ success: false, message: 'Task not found with this Id'});
+      console.log("taskId", taskId);
+      const task = await Task.findByIdAndDelete({ _id: taskId });
+      console.log("findTaskToDelete", task);
+      if (!task) {
+        return res
+          .status(404)
+          .send({ success: false, message: "Task not found with this Id" });
       }
-      res.status(200).send({success: true, message: "Task deleted successfully"});
-      
+      res
+        .status(200)
+        .send({ success: true, message: "Task deleted successfully" });
     } catch (error) {
-      res.status(500).send({ message: 'Internal Server error', error });
+      res.status(500).send({ message: "Internal Server error", error });
     }
-  }
+  },
+  
+  // /tasks/:id get a spewcific task
+
+  getSingleTask: async (req: Request, res: Response): Promise<any> => {
+    try {
+      const taskId = req.params.id;
+      const task = await Task.findById({ _id: taskId });
+      if (!task) {
+        return res
+          .status(404)
+          .send({ success: false, message: "Task not found with this Id" });
+      }
+      res
+        .status(200)
+        .send({
+          success: true,
+          message: "Task Sended Successfully",
+          task: task,
+        });
+    } catch (error) {
+      res.status(500).send({ message: "Internal Server error", error });
+    }
+  },
 };
 
 export default task;
