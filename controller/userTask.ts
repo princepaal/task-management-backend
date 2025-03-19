@@ -87,14 +87,21 @@ const task = {
 
     try {
       const taskId = req.params.id;
-      console.log('taskId', taskId);
-      const task = await Task.findByIdAndDelete({_id: taskId});
-      console.log('findTaskToDelete', task);
-      if(!task){
-        return res.status(404).send({ success: false, message: 'Task not found with this Id'});
+      const task = await Task.findById({ _id: taskId });
+      console.log('task', task)
+      if (!task) {
+        return res
+          .status(404)
+          .send({ success: false, message: "Task not found with this Id" });
       }
-      res.status(200).send({success: true, message: "Task deleted successfully"});
-      
+
+      return res
+        .status(200)
+        .send({
+          success: true,
+          message: "Task Sended Successfully",
+          task: task,
+        });
     } catch (error) {
       res.status(500).send({ message: 'Internal Server error', error });
     }

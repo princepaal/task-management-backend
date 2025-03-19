@@ -1,13 +1,14 @@
 import  jwt  from 'jsonwebtoken';
 import { Request, Response } from "express";
-import { IProfile, IUser } from "../interface/user";
+import { IUser } from "../interface/user";
 import { User } from "../models/userSchema";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 
 const user = {
   createUser: async (req: Request, res: Response): Promise<any> => {
-    const { name, email, password }: IUser = req.body;
+    const { name, password }: IUser = req.body;
+    const email = req.body.email?.trim()?.toLowerCase();
     const user = mongoose.model("User");
     console.log("user", user);
     try {
@@ -55,7 +56,8 @@ const user = {
   },
 
   loginUser: async (req: Request, res: Response): Promise<any> => {
-    const { email, password } = req.body;
+    const {password } = req.body;
+    const email = req.body.email?.trim()?.toLowerCase();
 
     try {
       const user = await User.findOne({ email });
