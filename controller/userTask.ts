@@ -87,7 +87,7 @@ const task = {
 
     try {
       const taskId = req.params.id;
-      const task = await Task.findById({ _id: taskId });
+      const task = await Task.findByIdAndDelete({ _id: taskId });
       console.log('task', task)
       if (!task) {
         return res
