@@ -11,11 +11,15 @@ dotenv.config();
 const createServer = async() => {
   try {
     const app = express();
-    app.use(cors());
+    app.use(cors({
+      origin: "*", // Allow all domains
+      methods: "GET, POST, PUT, DELETE, OPTIONS",
+      allowedHeaders: "Content-Type, Authorization"
+  }));
     app.use(cookieParser());
     app.use(bodyParser.json());
     app.use("/auth", userRoute);
-    app.use('/auth',taskRouter);
+    app.use("/auth",taskRouter);
 
     app.listen(5000, () => console.log("Server is Running"));
     return app;
